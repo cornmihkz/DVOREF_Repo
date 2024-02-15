@@ -6,7 +6,6 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-library("MASS")
 library("stats")
 library("tidyverse")
 library("ggplot2")
@@ -26,14 +25,24 @@ group8_df$Gender <- factor(group8_df$Gender,
                            labels = c(0, 1))
 
 
-group8_df$`Skin Tone` <- factor(group8_df$`Skin Tone`,
-                           labels = c("Dark", "Fair", "Medium", "Light"),
-                           levels = c(1, 2, 3, 4))
+group8_df$`Skin Tone` <- ordered(group8_df$`Skin Tone`,
+                            levels = c("Dark", "Fair", "Medium", "Light"))
 
 group8_df$`Skin Type` <- factor(group8_df$`Skin Type`, 
                                 levels = c("Combination", "Dry", 
                                            "Normal", "Oily", "Sensitive"))
 
+# group8_df$Q2 <- ordered(group8_df$`Q2`, levels = resp_lvl)
+# group8_df$Q3 <- ordered(group8_df$`Q3`, levels = resp_lvl)
+# group8_df$Q4 <- ordered(group8_df$`Q4`, levels = resp_lvl)
+# group8_df$Q5 <- ordered(group8_df$`Q5`, levels = resp_lvl)
+# group8_df$Q6 <- ordered(group8_df$`Q6`, levels = resp_lvl)
+# group8_df$Q7 <- ordered(group8_df$`Q7`, levels = resp_lvl)
+
+
+group8_df <-
+  group8_df %>% 
+    mutate(across(Q2:Q7, ~ordered(., levels = resp_lvl)))
 ```
 
 ```{r}
@@ -90,15 +99,20 @@ group8_df %>%
 ```{r}
 # 2.) What are the implications for different skin types, including the risk of skin sensitivities, allergic reactions, or irritations when using dragon fruit as a blush?
 
-library("Hmisc")
-polr(`Skin Tone` ~ Gender, data = group8_df)
+library("MASS")
+summary(polr(Q2 ~ Gender, data = group8_df, Hess=TRUE))
+summary(polr(Q2 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+summary(polr(Q3 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+summary(polr(Q4 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+summary(polr(Q5 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+summary(polr(Q6 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+summary(polr(Q7 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
 
+detach("package:MASS", unload = TRUE)
 ```
 
 
 ```{r}
-
-
 ```
 
 
