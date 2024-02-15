@@ -27,7 +27,8 @@ group8_df$Gender <- factor(group8_df$Gender,
 
 
 group8_df$`Skin Tone` <- factor(group8_df$`Skin Tone`,
-                           levels = c("Dark", "Fair", "Medium", "Light"))
+                           labels = c("Dark", "Fair", "Medium", "Light"),
+                           levels = c(1, 2, 3, 4))
 
 group8_df$`Skin Type` <- factor(group8_df$`Skin Type`, 
                                 levels = c("Combination", "Dry", 
@@ -89,8 +90,8 @@ group8_df %>%
 ```{r}
 # 2.) What are the implications for different skin types, including the risk of skin sensitivities, allergic reactions, or irritations when using dragon fruit as a blush?
 
-
-polr()
+library("Hmisc")
+polr(`Skin Tone` ~ Gender, data = group8_df)
 
 ```
 
