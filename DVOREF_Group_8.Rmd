@@ -102,6 +102,10 @@ library("MASS")
 # skin tone explained by Age, Skin Type, Gender and Q1
 skinTone_polr <- polr(`Skin Tone` ~ Age + `Skin Type` + Gender + Q1, data = group8_df, Hess=TRUE)
 summary(skinTone_polr)
+cTable_skinTone <- coef(summary(skinTone_polr))
+p_skinTone <- pnorm(abs(cTable_skinTone[, "t value"]), lower.tail = FALSE) * 2
+cTable_p_skinTone <- cbind(cTable_skinTone, "p value" = p_skinTone)
+cTable_p_skinTone
 
 
 summary(polr(`Skin Tone` ~ Q2, data = group8_df, Hess=TRUE))
