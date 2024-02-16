@@ -107,24 +107,21 @@ p_skinTone <- pnorm(abs(cTable_skinTone[, "t value"]), lower.tail = FALSE) * 2
 cTable_p_skinTone <- cbind(cTable_skinTone, "p value" = p_skinTone)
 cTable_p_skinTone
 
-
-summary(polr(`Skin Tone` ~ Q2, data = group8_df, Hess=TRUE))
-summary(polr(Q3 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
-summary(polr(Q4 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
-summary(polr(Q5 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
-summary(polr(Q6 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
-summary(polr(Q7 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+## odds ratios
+exp(coef(skinTone_polr))
 
 detach("package:MASS", unload = TRUE)
 ```
 
 
 ```{r}
+summary(polr(`Skin Tone` ~ Q2, data = group8_df, Hess=TRUE))
+summary(polr(Q3 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+summary(polr(Q4 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+summary(polr(Q5 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+summary(polr(Q6 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+summary(polr(Q7 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
 ```
-
-
-
-
 
 
 
