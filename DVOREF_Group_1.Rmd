@@ -9,7 +9,7 @@ output: html_document
 library(dplyr)
 library(rstatix)
 
-group1_data <- read_csv("../Group_1/Group_1.csv")
+# group1_data <- read_csv("../Group_1/Group_1.csv")
 
 # matrix for Cronbach's alpha
 grp1_cronbach_data <-
