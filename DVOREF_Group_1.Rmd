@@ -1,0 +1,124 @@
+---
+title: "DVOREF_Group_1"
+author: "Mihkmihk"
+date: "2024-02-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(rstatix)
+
+group1_data <- read_csv("../Group_1/Group_1.csv")
+
+# matrix for Cronbach's alpha
+grp1_cronbach_data <-
+  group1_data %>%
+  dplyr::select(reading_rating_a,
+         reading_rating_b,
+         info_recall_rating_A,
+         info_recall_rating_B,
+         attentive_rating_a,
+         attentive_rating_B,
+         productivity_rate_A,
+         productivity_rate_B,
+         white_Noise_Rating_Effectiveness) 
+
+grp1_cronbach_matrix <- 
+  grp1_cronbach_data %>%
+  data.matrix()
+
+library(umx)
+reliability(cov(grp1_cronbach_matrix))
+
+psych::alpha(grp1_cronbach_data, check.keys=TRUE)
+```
+
+
+```{r}
+t.test(grp1_cronbach_data$reading_rating_a,
+       grp1_cronbach_data$reading_rating_b,
+       paired = TRUE)
+
+t.test(grp1_cronbach_data$info_recall_rating_A,
+       grp1_cronbach_data$info_recall_rating_B,
+       paired = TRUE)
+
+
+t.test(grp1_cronbach_data$attentive_rating_a,
+       grp1_cronbach_data$attentive_rating_B,
+       paired = TRUE)
+
+t.test(grp1_cronbach_data$productivity_rate_A,
+       grp1_cronbach_data$productivity_rate_B,
+       paired = TRUE)
+
+```
+
+
+```{r setup, include=FALSE}
+f_test_data <- read_csv("../Group_1/Group_1_longer.csv")
+
+# 1. How concentrated were you while reading?
+reading_rating <- f_test_data %>%
+  dplyr::select(reading_concentration,
+                reading_rating)
+
+var.test(reading_rating ~ reading_concentration , data = reading_rating)
+
+
+# 2. How much information can you recall from the story?
+info_recall_rating <- f_test_data %>%
+  dplyr::select(trt_info_recall,
+                info_recall_rating)
+
+info_recall_rating <- f_test_data %>%
+  dplyr::select(trt_info_recall,
+                info_recall_rating)
+
+var.test(info_recall_rating ~ trt_info_recall , 
+         data = info_recall_rating)
+
+
+
+
+# 3. How well was your attentiveness while reading?
+attentiveness_rating <- f_test_data %>%
+  dplyr::select(trt_attentiveness,
+                attentive_rating)
+
+attentiveness_rating <- f_test_data %>%
+  dplyr::select(trt_attentiveness,
+                attentive_rating)
+
+var.test(attentive_rating ~ trt_attentiveness , 
+         data = attentiveness_rating)
+
+
+# 4. How will you rate your productivity in finishing the story? 
+productivity_rating <- f_test_data %>%
+  dplyr::select(trt_productivity,
+                productivity_rate)
+
+productivity_rating <- f_test_data %>%
+  dplyr::select(trt_productivity,
+                productivity_rate)
+
+var.test(productivity_rate ~ trt_productivity , 
+         data = productivity_rating)
+
+library("BSDA")
+# 5. How would you rate the effectiveness of 
+# White Noise as a student in reading the story?
+
+attach(white_noise_effectivity)
+z.test(f_test_data$white_Noise_Rating_Effectiveness,
+       mu = 3, alternative = "greater", sigma.x = 1)
+```
+
+
+```{r setup, include=FALSE}
+var.test(info_recall_rating_A ~ info_recall_rating_B, data = grp1_cronbach_data)
+var.test(attentive_rating_a ~ attentive_rating_B, data = grp1_cronbach_data)
+var.test(productivity_rate_A ~ productivity_rate_B, data = grp1_cronbach_data)
+```
