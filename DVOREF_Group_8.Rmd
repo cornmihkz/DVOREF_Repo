@@ -27,7 +27,7 @@ group8_df$Gender <- factor(group8_df$Gender,
 group8_df$`Skin Tone` <- ordered(group8_df$`Skin Tone`,
                             levels = c("Dark", "Fair", "Medium", "Light"))
 
-group8_df$`Skin Type` <- factor(group8_df$`Skin Type`, 
+group8_df$skin_type <- factor(group8_df$`Skin Type`, 
                                 levels = c("Combination", "Dry", 
                                            "Normal", "Oily", "Sensitive"))
 
@@ -41,18 +41,55 @@ group8_df$`Skin Type` <- factor(group8_df$`Skin Type`,
 
 group8_df <-
   group8_df %>% 
-    mutate(across(Q2:Q7, ~ordered(., levels = resp_lvl, labels = resp_rate)))
+    mutate(across(Q2:Q7, ~as.numeric(ordered(., 
+                                             levels = resp_lvl, 
+                                             labels = resp_rate))))
 
 
 group8_df <- group8_df %>% dplyr::select(-Q7)
 ```
 
 ```{r}
-group8_df %>%
-  group_by(`Skin Type`, Q2) %>%
-  summarise(n())
+
+q2_anova <- aov(Q2 ~ skin_type, data = group8_df)
+summary(q2_anova)
+pairwise.t.test(group8_df$Q2, group8_df$skin_type, p.adj = "none")
+
+TukeyHSD(q2_anova, ordered = TRUE)
+
 ```
 
+```{r}
+q3_anova <- aov(Q3 ~ skin_type, data = group8_df)
+summary(q3_anova)
+pairwise.t.test(group8_df$Q3, group8_df$skin_type, p.adj = "none")
+
+TukeyHSD(q3_anova, ordered = TRUE)
+```
+
+```{r}
+q4_anova <- aov(Q4 ~ skin_type, data = group8_df)
+summary(q4_anova)
+pairwise.t.test(group8_df$Q4, group8_df$skin_type, p.adj = "none")
+
+TukeyHSD(q4_anova, ordered = TRUE)
+```
+
+```{r}
+q5_anova <- aov(Q5 ~ skin_type, data = group8_df)
+summary(q5_anova)
+pairwise.t.test(group8_df$Q5, group8_df$skin_type, p.adj = "none")
+
+TukeyHSD(q5_anova, ordered = TRUE)
+```
+
+```{r}
+q6_anova <- aov(Q6 ~ skin_type, data = group8_df)
+summary(q6_anova)
+pairwise.t.test(group8_df$Q6, group8_df$skin_type, p.adj = "none")
+
+TukeyHSD(q6_anova, ordered = TRUE)
+```
 
 ``` Testing the Effectiveness of the Radiance of ```
 ```Dragon Fruit as a Natural Beauty Note: the Cheeks Cream Blush On ```
@@ -63,99 +100,99 @@ group8_df %>%
 
 
 ```
-
-
-```{r}
-# 2.) What are the implications for different skin types, including the risk of skin sensitivities, allergic reactions, or irritations when using dragon fruit as a blush?
-
-library("MASS")
-# skin tone explained by Age, Skin Type, Gender and Q1
-skinTone_polr <- polr(`Skin Tone` ~ Age + `Skin Type` + Gender + Q1, data = group8_df, Hess=TRUE)
-summary(skinTone_polr)
-cTable_skinTone <- coef(summary(skinTone_polr))
-p_skinTone <- pnorm(abs(cTable_skinTone[, "t value"]), lower.tail = FALSE) * 2
-cTable_p_skinTone <- cbind(cTable_skinTone, "p value" = p_skinTone)
-cTable_p_skinTone
-
-## odds ratios
-exp(coef(skinTone_polr))
-
-detach("package:MASS", unload = TRUE)
+# 
+# 
+# ```{r}
+# # 2.) What are the implications for different skin types, including the risk of skin sensitivities, allergic reactions, or irritations when using dragon fruit as a blush?
+# 
+# library("MASS")
+# # skin tone explained by Age, Skin Type, Gender and Q1
+# skinTone_polr <- polr(`Skin Tone` ~ Age + `Skin Type` + Gender + Q1, data = group8_df, Hess=TRUE)
+# summary(skinTone_polr)
+# cTable_skinTone <- coef(summary(skinTone_polr))
+# p_skinTone <- pnorm(abs(cTable_skinTone[, "t value"]), lower.tail = FALSE) * 2
+# cTable_p_skinTone <- cbind(cTable_skinTone, "p value" = p_skinTone)
+# cTable_p_skinTone
+# 
+# ## odds ratios
+# exp(coef(skinTone_polr))
+# 
+# detach("package:MASS", unload = TRUE)
+# ```
+# 
+# 
+# ```{r}
+# summary(polr(`Skin Tone` ~ Q2, data = group8_df, Hess=TRUE))
+# summary(polr(Q3 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+# summary(polr(Q4 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+# summary(polr(Q5 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+# summary(polr(Q6 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+# summary(polr(Q7 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
+# ```
+# 
+# ```{r}
+# library(tidymodels) 
+# library(skimr) 
+# 
+# skin_type_recipe <-
+#   recipe(`Skin Type` ~ ., data = group8_df) %>%
+#   update_role(Respondents, new_role = "ID") %>%
+#   step_dummy(Gender, Q1) %>%
+#   step_ordinalscore(`Skin Tone`, Q2:Q6)
+# 
+# skin_type_recipe %>% prep() %>% bake(new_data = NULL)
+# 
+# skintype_multinomreg_mod <- 
+#   multinom_reg() %>% 
+#   set_engine("nnet")
+# 
+# 
+# skintype_multinomreg_wflow <- 
+#   workflow() %>% 
+#   add_model(skintype_multinomreg_mod) %>% 
+#   add_recipe(skin_type_recipe)
+# 
+# skintype_multinomreg_wflow %>% fit(group8_df)
 ```
 
+<!-- ```{r} -->
+<!-- gender_colors <- c("paleturquoise2", "lightpink1") -->
 
-```{r}
-summary(polr(`Skin Tone` ~ Q2, data = group8_df, Hess=TRUE))
-summary(polr(Q3 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
-summary(polr(Q4 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
-summary(polr(Q5 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
-summary(polr(Q6 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
-summary(polr(Q7 ~ `Skin Tone`, data = group8_df, Hess=TRUE))
-```
-
-```{r}
-library(tidymodels) 
-library(skimr) 
-
-skin_type_recipe <-
-  recipe(`Skin Type` ~ ., data = group8_df) %>%
-  update_role(Respondents, new_role = "ID") %>%
-  step_dummy(Gender, Q1) %>%
-  step_ordinalscore(`Skin Tone`, Q2:Q6)
-
-skin_type_recipe %>% prep() %>% bake(new_data = NULL)
-
-skintype_multinomreg_mod <- 
-  multinom_reg() %>% 
-  set_engine("nnet")
-
-
-skintype_multinomreg_wflow <- 
-  workflow() %>% 
-  add_model(skintype_multinomreg_mod) %>% 
-  add_recipe(skin_type_recipe)
-
-skintype_multinomreg_wflow %>% fit(group8_df)
-```
-
-```{r}
-gender_colors <- c("paleturquoise2", "lightpink1")
-
-group8_df %>% 
-  group_by(Gender) %>%
-  ggplot(aes(factor(Gender, levels = c("Male", "Female")), fill = Gender)) +
-  geom_text(stat='count',
-            aes(label = after_stat(count)),
-                size = 5, color = "black", nudge_y = 2) +
-  geom_bar(width = 0.5, show.legend = FALSE) +
-  labs(x = "Gender",
-       y = "Number of Respondents",
-       title = "Number of Respondents by Gender") +
-  scale_fill_manual(values = gender_colors, 
-                    guide = guide_legend(reverse = TRUE)) + 
-  theme(
-    plot.title.position = "panel",
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(),
-    panel.background = element_blank(), 
-    axis.line = element_line(colour = "black"),
-    plot.title = element_text(margin = margin(b=12),
-                              hjust = 0.5,
-                              vjust = -125,
-                              size = 20),
-    plot.margin = margin(b = 35),
-    aspect.ratio = 1,
-    strip.background = element_blank(),
-    strip.placement = "outside",
-    axis.text = element_text(size = 13,
-                             color = "black",
-                             face = "plain",
-                             vjust = -0.8,
-                             margin = margin(b = 20)), 
-    axis.title = element_text(size = 16),
-    strip.text.x =  element_text(size = 14)
-    )
-```
+<!-- group8_df %>%  -->
+<!--   group_by(Gender) %>% -->
+<!--   ggplot(aes(factor(Gender, levels = c("Male", "Female")), fill = Gender)) + -->
+<!--   geom_text(stat='count', -->
+<!--             aes(label = after_stat(count)), -->
+<!--                 size = 5, color = "black", nudge_y = 2) + -->
+<!--   geom_bar(width = 0.5, show.legend = FALSE) + -->
+<!--   labs(x = "Gender", -->
+<!--        y = "Number of Respondents", -->
+<!--        title = "Number of Respondents by Gender") + -->
+<!--   scale_fill_manual(values = gender_colors,  -->
+<!--                     guide = guide_legend(reverse = TRUE)) +  -->
+<!--   theme( -->
+<!--     plot.title.position = "panel", -->
+<!--     panel.grid.major = element_blank(),  -->
+<!--     panel.grid.minor = element_blank(), -->
+<!--     panel.background = element_blank(),  -->
+<!--     axis.line = element_line(colour = "black"), -->
+<!--     plot.title = element_text(margin = margin(b=12), -->
+<!--                               hjust = 0.5, -->
+<!--                               vjust = -125, -->
+<!--                               size = 20), -->
+<!--     plot.margin = margin(b = 35), -->
+<!--     aspect.ratio = 1, -->
+<!--     strip.background = element_blank(), -->
+<!--     strip.placement = "outside", -->
+<!--     axis.text = element_text(size = 13, -->
+<!--                              color = "black", -->
+<!--                              face = "plain", -->
+<!--                              vjust = -0.8, -->
+<!--                              margin = margin(b = 20)),  -->
+<!--     axis.title = element_text(size = 16), -->
+<!--     strip.text.x =  element_text(size = 14) -->
+<!--     ) -->
+<!-- ``` -->
 
 
 
