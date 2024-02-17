@@ -1,0 +1,190 @@
+---
+title: "group_Janyna"
+author: "Mihkmihk"
+date: "2024-02-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library("tidyverse")
+library("ggplot2")
+library("dplyr")
+
+# highblood <- read_csv("../Group_JanYna/highblood.csv")
+# 
+# iron_def <- read_csv("../Group_JanYna/iron_def.csv")
+# 
+# malnutrition <- read_csv("../Group_JanYna/malnutrition.csv")
+# 
+# positive_control <- read_csv("../Group_JanYna/positive_control.csv")
+```
+
+```{r}
+# paired t-test
+t.test(iron_def$weight_before, iron_def$weight_after, paired = TRUE) # t = -3.7225, df = 44, p-value = 0.0005573
+
+library("rstatix")
+malnutrition_df <- 
+  malnutrition %>%
+    dplyr::select(TREATMENT, weight_before, weight_after) %>%
+    mutate(treatment = factor(TREATMENT)) %>%
+    dplyr::select(-TREATMENT)
+
+malnutrition_summary <-
+  malnutrition_df %>%
+    group_by(treatment) %>%  
+    summarise(mean_weight_before = mean(weight_before),
+              sd_weight_before = sd(weight_before),
+              mean_weight_after = mean(weight_after),
+              sd_weight_after = sd(weight_after))
+
+
+library("car")
+leveneTest(weight_after~treatment, data = malnutrition_df)
+
+# ancova for malnutrition
+malnutrition_ancova <- aov(weight_after ~ weight_before + treatment, 
+                           data = malnutrition_df)
+Anova(malnutrition_ancova, type = "III")
+
+library("multcomp")
+malnutrition_ancova_PostHoc <- glht(malnutrition_ancova, 
+                                    linfct = mcp(treatment = "Tukey"))
+summary(malnutrition_ancova_PostHoc)
+detach("package:multcomp", unload = TRUE)
+detach("package:rstatix", unload = TRUE)
+
+```
+
+
+```{r}
+# iron deficiency using diastolic bp
+# systolic / diastolic
+iron_def_df <-
+  iron_def %>%
+    dplyr::select(TREATMENT, bp_before, bp_after) %>%
+    mutate(treatment = factor(TREATMENT)) %>%
+    dplyr::select(-TREATMENT)
+
+diastolic_df <- 
+  iron_def_df %>%
+  mutate(diastolic_before = as.numeric(map(strsplit(bp_before, "/"), 2)),
+         diastolic_after  = as.numeric(map(strsplit(bp_after, "/"), 2)))
+
+# paired t-test
+t.test(diastolic_df$diastolic_before, diastolic_df$diastolic_after, paired = TRUE)
+
+
+diastolic_summary <-
+  diastolic_df %>%
+    group_by(treatment) %>%  
+    summarise(mean_diastolic_before = mean(diastolic_before ),
+              sd_diastolic_before = sd(diastolic_before ),
+              mean_diastolic_after = mean(diastolic_after),
+              sd_diastolic_after = sd(diastolic_after))
+diastolic_summary
+
+library("stats")
+library("car")
+# levene's test
+leveneTest(diastolic_before~treatment, data = diastolic_df)
+
+# ancova for malnutrition
+diastolic_ancova <- aov(diastolic_after ~ diastolic_before + treatment, 
+                           data = diastolic_df)
+Anova(diastolic_ancova, type = "III")
+
+library("multcomp")
+diastolic_ancova_PostHoc <- glht(diastolic_ancova, 
+                                    linfct = mcp(treatment = "Tukey"))
+summary(diastolic_ancova_PostHoc)
+detach("package:multcomp", unload = TRUE)
+detach("package:rstatix", unload = TRUE)
+detach("package:stats", unload = TRUE)
+
+### weight iron Def dataset
+weight_ironDef <-
+  iron_def %>%
+    dplyr::select(TREATMENT, weight_before, weight_after) %>%
+    mutate(treatment = factor(TREATMENT)) %>%
+    dplyr::select(-TREATMENT)
+
+# paired t-test
+t.test(weight_ironDef$weight_before, weight_ironDef$weight_after, paired = TRUE)
+
+
+weight_ironDef_summary <-
+  weight_ironDef %>%
+    group_by(treatment) %>%  
+    summarise(mean_weight_before = mean(weight_before ),
+              sd_weight_before = sd(weight_before ),
+              mean_weight_after = mean(weight_after),
+              sd_weight_after = sd(weight_after))
+weight_ironDef_summary
+
+library("stats")
+library("car")
+# levene's test
+leveneTest(weight_before~treatment, data = weight_ironDef)
+
+# ancova for malnutrition
+weight_ancova <- aov(weight_after ~ weight_before + treatment, 
+                           data = weight_ironDef)
+Anova(weight_ancova, type = "III")
+
+library("multcomp")
+weight_ancova_PostHoc <- glht(weight_ancova, 
+                                    linfct = mcp(treatment = "Tukey"))
+summary(weight_ancova_PostHoc)
+detach("package:multcomp", unload = TRUE)
+detach("package:rstatix", unload = TRUE)
+detach("package:stats", unload = TRUE)
+```
+
+
+```{r}
+# highblood dataset using diastolic bp
+# systolic / diastolic
+highblood_df <-
+  highblood %>%
+    dplyr::select(TREATMENT, bp_before, bp_after) %>%
+    mutate(treatment = factor(TREATMENT)) %>%
+    dplyr::select(-TREATMENT)
+
+hb_dias_df <- 
+  highblood_df %>%
+  mutate(highblood_before = as.numeric(map(strsplit(bp_before, "/"), 2)),
+         highblood_after  = as.numeric(map(strsplit(bp_after, "/"), 2)))
+
+# paired t-test
+t.test(hb_dias_df$highblood_before, hb_dias_df$highblood_after, paired = TRUE)
+
+
+hb_dias_summary <-
+  hb_dias_df %>%
+    group_by(treatment) %>%  
+    summarise(mean_highblood_before = mean(highblood_before ),
+              sd_highblood_before = sd(highblood_before ),
+              mean_highblood_after = mean(highblood_after),
+              sd_highblood_after = sd(highblood_after))
+highblood_summary
+
+library("stats")
+library("car")
+# levene's test
+leveneTest(highblood_before~treatment, data = hb_dias_df)
+
+# ancova for malnutrition
+highblood_ancova <- aov(highblood_after ~ highblood_before + treatment, 
+                           data = hb_dias_df)
+Anova(highblood_ancova, type = "III")
+
+library("multcomp")
+highblood_ancova_PostHoc <- glht(highblood_ancova, 
+                                    linfct = mcp(treatment = "Tukey"))
+summary(highblood_ancova_PostHoc)
+detach("package:multcomp", unload = TRUE)
+detach("package:rstatix", unload = TRUE)
+detach("package:stats", unload = TRUE)
+```
+
