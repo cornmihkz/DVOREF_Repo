@@ -1,0 +1,28 @@
+---
+title: "Group_Trizzia"
+author: "Mihkmihk"
+date: "2024-02-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library("dplyr")
+library("stats")
+
+group_trizzia_df <- read_csv("../Group_Trizzia/Group_Trizzia.csv")
+
+# "Sample" "color_rate" "texture_rate" "difference_gumamela" "creation_rate"      
+# "shade_rate"          "smell_rate"          "hydrate_rate"        "appearance_rate"    
+#  "stain_rate"  
+
+
+t.test(color_rate ~ Sample, data = group_trizzia_df)
+t.test(texture_rate ~ Sample, data = group_trizzia_df)
+t.test(difference_gumamela ~ Sample, data = group_trizzia_df)
+t.test(creation_rate ~ Sample, data = group_trizzia_df)
+t.test(shade_rate ~ Sample, data = group_trizzia_df)
+t.test(smell_rate ~ Sample, data = group_trizzia_df)
+t.test(hydrate_rate ~ Sample, data = group_trizzia_df)
+t.test(appearance_rate ~ Sample, data = group_trizzia_df)
+t.test(stain_rate ~ Sample, data = group_trizzia_df)
+```
