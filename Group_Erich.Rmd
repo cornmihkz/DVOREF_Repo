@@ -1,0 +1,128 @@
+---
+title: "Group_Erich"
+author: "Mihkmihk"
+date: "2024-02-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(dplyr)
+
+group_Erich_data <- read_csv("../Group_Erich/Group_Erich.csv")
+
+
+groupErich_df <-
+  group_Erich_data %>% 
+  mutate(age_group = factor(case_when(Age < 21 ~ "Below 21",
+                               (Age >= 21 & Age <= 25) ~ "21 - 25",
+                               TRUE ~ "Above 25")),
+         setups = factor(Setups),
+         gender = factor(Gender),
+         alcohol_content = as.numeric(`Alcohol Content`))
+```
+
+```{r}
+# "Respondents" "Appearance" "Sweetness" "Aroma" "alcohol_content"           
+# "age_group" "setups" "gender"
+levene_test(Appearance ~ age_group, data = groupErich_df)
+age_group_appearance_kruskal <- kruskal.test(Appearance ~ age_group, 
+                                           data = groupErich_df)
+
+pairwise.wilcox.test(groupErich_df$Appearance, groupErich_df$Setups)
+```
+
+
+```{r}
+levene_test(Sweetness ~ age_group, data = groupErich_df)
+age_group_sweetness_anova <- aov(Sweetness ~ age_group, data = groupErich_df)
+summary(age_group_sweetness_anova)
+
+pairwise.t.test(groupErich_df$Sweetness, 
+                groupErich_df$age_group, p.adj = "none")
+
+TukeyHSD(age_group_sweetness_anova, ordered = TRUE)
+```
+
+```{r}
+levene_test(Aroma ~ age_group, data = groupErich_df)
+age_group_aroma_anova <- aov(Aroma ~ age_group, data = groupErich_df)
+summary(age_group_aroma_anova)
+
+pairwise.t.test(groupErich_df$Aroma, 
+                groupErich_df$age_group, p.adj = "none")
+
+TukeyHSD(age_group_aroma_anova, ordered = TRUE)
+```
+
+```{r}
+levene_test(alcohol_content ~ age_group, data = groupErich_df)
+age_group_alcohol_anova <- aov(alcohol_content ~ age_group, data = groupErich_df)
+summary(age_group_alcohol_anova)
+
+pairwise.t.test(groupErich_df$alcohol_content, 
+                groupErich_df$age_group, p.adj = "none")
+
+TukeyHSD(age_group_alcohol_anova, ordered = TRUE)
+```
+
+
+
+
+```{r}
+ks.test(groupErich_df$Appearance, "pnorm")
+wilcox.test(Appearance ~ gender, data = groupErich_df)
+
+ks.test(groupErich_df$Sweetness, "pnorm")
+wilcox.test(Sweetness ~ gender, data = groupErich_df)
+
+ks.test(groupErich_df$Aroma, "pnorm")
+wilcox.test(Aroma ~ gender, data = groupErich_df)
+
+ks.test(groupErich_df$alcohol_content, "pnorm")
+wilcox.test(alcohol_content ~ gender, data = groupErich_df)
+```
+
+
+
+```{r}
+levene_test(Sweetness ~ Setups, data = groupErich_df)
+setups_sweetness_ks <- kruskal.test(Sweetness ~ Setups, data = groupErich_df)
+pairwise.wilcox.test(groupErich_df$Sweetness, groupErich_df$Setups,
+                 p.adjust.method = "BH")
+```
+
+```{r}
+levene_test(Aroma ~ Setups, data = groupErich_df)
+setups_aroma_kruskal <- kruskal.test(Aroma ~ Setups, data = groupErich_df)
+pairwise.wilcox.test(groupErich_df$Aroma, groupErich_df$Setups,
+                 p.adjust.method = "BH")
+```
+
+```{r}
+levene_test(alcohol_content ~ Setups, data = groupErich_df)
+setups_alcohol_anova <- aov(alcohol_content ~ Setups, data = groupErich_df)
+summary(setups_alcohol_anova)
+
+pairwise.t.test(groupErich_df$alcohol_content, 
+                groupErich_df$Setups, p.adj = "none")
+
+TukeyHSD(setups_alcohol_anova, ordered = TRUE)
+```
+
+
+
+```{r}
+levene_test(Appearance ~ Setups, data = groupErich_df)
+setups_appearance_anova <- aov(Appearance ~ Setups, data = groupErich_df)
+summary(setups_appearance_anova)
+
+pairwise.t.test(groupErich_df$Appearance, 
+                groupErich_df$Setups, p.adj = "none")
+
+TukeyHSD(setups_alcohol_anova, ordered = TRUE)
+```
+
+
+
+
